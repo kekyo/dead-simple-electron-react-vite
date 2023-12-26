@@ -10,6 +10,7 @@ export default defineConfig(({command}) => {
 
   const isServe = command === 'serve'
   const isBuild = command === 'build'
+  const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
     plugins: [
@@ -18,12 +19,28 @@ export default defineConfig(({command}) => {
         // Main-Process entry file of the Electron App.
         {
           entry: 'electron/main.ts',
+          onstart(options) {
+            options.startup();
+          },
           vite: {
             build: {
-              sourcemap: isServe || !!process.env.VSCODE_DEBUG,
+              sourcemap: sourcemap,
               minify: isBuild
             }
           }
+        },
+        // Preloader file of the Electron App.
+        {
+          entry: "electron/preload.ts",
+          onstart(options) {
+            options.reload()
+          },
+          vite: {
+            build: {
+              sourcemap: sourcemap ? "inline" : undefined,
+              minify: isBuild
+            },
+          },
         }
       ]),
       renderer()

@@ -5,13 +5,28 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 
 // https://vitejs.dev/config/
-export default defineConfig(() => {
-  rmSync("dist-electron", { recursive: true, force: true });
+export default defineConfig(({command}) => {
+  rmSync('dist-electron', { recursive: true, force: true })
+
+  const isServe = command === 'serve'
+  const isBuild = command === 'build'
+
   return {
     plugins: [
       react(),
-      electron({ entry: 'electron/main.ts' }),
+      electron([
+        // Main-Process entry file of the Electron App.
+        {
+          entry: 'electron/main.ts',
+          vite: {
+            build: {
+              sourcemap: isServe || !!process.env.VSCODE_DEBUG,
+              minify: isBuild
+            }
+          }
+        }
+      ]),
       renderer()
     ]
   };
-});
+})

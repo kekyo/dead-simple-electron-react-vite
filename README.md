@@ -1,3 +1,5 @@
+Thanks refer, go to archive. Use [electron-vite project](https://electron-vite.org/) instead.
+
 # Dead simple Electron & React & Vite
 
 This is a sample project configuration for using Electron & React & Vite,
